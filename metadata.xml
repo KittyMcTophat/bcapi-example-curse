@@ -2,7 +2,7 @@
 <metadata>
     <name>Example Curse</name>
     <directory>example curse</directory>
-    <description>Requires [url=]Better CurseAPI[/url]
+    <description>Requires [url=https://steamcommunity.com/sharedfiles/filedetails/?id=3138981694]Better CurseAPI[/url]
 
 Does nothing, just an example for using Better CurseAPI</description>
     <version>1.0</version>
