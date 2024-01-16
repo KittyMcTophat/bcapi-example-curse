@@ -42,12 +42,34 @@ local function loadSettings()
     end
 end
 
-mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, loadSettings); -- load config data before a run
+if not REPENTOGON then
+    mod:AddCallback(ModCallbacks.MC_POST_GAME_STARTED, loadSettings); -- load config data before a run
+else
+    -- Fixes the bug where config isn't loaded for first floor curse generation.
+    -- As far as I'm aware, there isn't a non-repentogon way to fix this bug.
+    local loadedSlot = -1;
+
+    mod:AddCallback(ModCallbacks.MC_POST_SAVESLOT_LOAD, function (saveslot, isslotselected, rawslot)
+        if not isslotselected then return end;
+        if saveslot == loadedSlot then return end;
+
+        loadedSlot = saveslot;
+        loadSettings();
+    end);
+end
 
 function mod:saveSettings()
     local jsonString = json.encode(mod.settings)
     mod:SaveData(jsonString)
+
+    -- Dequeue the save, since it has been saved now
+    mod:RemoveCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.saveSettings);
 end
+
+function mod:queueSave()
+    mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.saveSettings);
+end
+
 -- end save/load settings
 
 -- start BetterCurseAPI setup
@@ -79,12 +101,12 @@ if ModConfigMenu then
         enabled_current_setting = function () return mod.settings.enabled end;
         on_change_enabled = function (b)
             mod.settings.enabled = b;
-            mod:saveSettings();
+            mod:queueSave();
         end;
         default_enabled = true;
         on_weight_change = function (n)
             mod.settings.weight = n;
-            mod:saveSettings();
+            mod:queueSave();
         end;
         default_weight = 1.0;
 
