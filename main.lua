@@ -69,7 +69,6 @@ end
 function mod:queueSave()
     mod:AddCallback(ModCallbacks.MC_PRE_GAME_EXIT, mod.saveSettings);
 end
-
 -- end save/load settings
 
 -- start BetterCurseAPI setup
